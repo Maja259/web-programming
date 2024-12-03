@@ -1,0 +1,209 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Events</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const radioButtons = document.querySelectorAll('.event-radio');
+            const hiddenInput = document.getElementById('eventName');
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    hiddenInput.value = this.value;
+                });
+            });
+        });
+    </script>
+    <style>
+        .center-radio {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .event-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .event-actions > div {
+            margin-right: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-top: 30px;
+        }
+
+        table {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .btn-sm {
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            margin-top: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: darkred;
+            border-color: indianred;
+        }
+
+        .btn-info:hover {
+            background-color: darkred;
+            border-color: indianred;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="display-4">EVENT BOOKING APP</h1>
+    </div>
+</section>
+<main>
+
+    <div class="container mt-4">
+        <section>
+            <h2>Search for Events</h2>
+            <form th:action="@{/events}" th:method="POST">
+                <div class="form-group">
+                    <label for="searchText">Event name contains:</label>
+                    <input type="text" id="searchText" name="searchText" class="form-control"
+                           placeholder="Enter event name">
+                </div>
+                <div class="form-group">
+                    <label for="minRating">Minimum Rating:</label>
+                    <input type="number" id="minRating" name="minRating" class="form-control" min="0" max="10"
+                           placeholder="Enter minimum rating">
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Filter by Location</h2>
+            <form th:action="@{/events}" th:method="GET">
+                <div class="form-group">
+                    <select name="locationId" class="form-control">
+                        <option value="">All Locations</option>
+                        <option th:each="loc : ${locations}"
+                                th:value="${loc.id}"
+                                th:text="${loc.name}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </section>
+
+        <div th:if="${hasError}">
+            <div class="alert alert-danger">
+                <p th:text="${error}"></p>
+            </div>
+        </div>
+
+        <section>
+            <h2>Choose an Event</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Popularity Score</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="event : ${events}">
+                    <td class="center-radio">
+                        <input type="radio" class="form-check-input event-radio" th:value="${event.name}"
+                               name="eventName" id="event_${event.getId()}"/>
+                    </td>
+                    <td th:text="${event.getName()}"></td>
+                    <td th:text="${event.getDescription()}"></td>
+                    <td th:text="${event.getPopularityScore()}"></td>
+                    <td th:text="${event.getLocation() != null ? event.getLocation().getName() : 'No Location'}"></td>
+                    <td>
+                        <div class="event-actions">
+                            <a th:href="@{/events/edit-form/{id}(id=${event.getId()})}" class="btn btn-info btn-sm">
+                                Edit
+                            </a>
+                            <form th:action="@{/events/delete/{id}(id=${event.getId()})}" method="POST"
+                                  class="d-inline-block">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Delete
+                                </button>
+                            </form>
+                            <div th:if="${event.isDisabled} == false">
+                                <form th:action="@{/events/increment/{id}(id=${event.getId()})}" method="post">
+                                    <button type="submit" class="btn btn-success btn-sm">Increment</button>
+                                </form>
+                                <form th:action="@{/events/decrement/{id}(id=${event.getId()})}" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm">Decrement</button>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <section>
+                <a href="/events/add-form" class="btn btn-dark">Add New Event</a>
+            </section>
+            <br/><br/>
+
+            <form th:action="@{/eventBooking}" th:method="POST">
+                <h3>Choose Number of Tickets</h3>
+                <input type="hidden" name="eventName" id="eventName">
+                <input type="number" name="numberOfTickets" class="form-control" min="1" max="10"
+                       placeholder="Enter number of tickets" required="">
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
