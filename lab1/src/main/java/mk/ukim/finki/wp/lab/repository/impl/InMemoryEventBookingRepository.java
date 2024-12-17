@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class EventBookingRepository {
+public class InMemoryEventBookingRepository {
     private List<EventBooking> bookings;
 
-    public EventBookingRepository() {
+    public InMemoryEventBookingRepository() {
         this.bookings = new ArrayList<>();
     }
 

@@ -95,14 +95,10 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- No Booking Case -->
             <div th:if="${bookings.size() == 0}" class="no-booking-alert">
                 <h3>No booking has been made yet. Please select an event and proceed with your booking.</h3>
             </div>
         </section>
-
-        <!-- Back Button -->
         <div class="mt-3">
             <a type="button" class="btn btn-secondary" href="/events">Back to Events</a>
         </div>

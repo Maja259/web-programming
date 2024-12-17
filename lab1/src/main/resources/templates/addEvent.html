@@ -87,7 +87,6 @@
             <form th:action="${event != null ? '/events/edit/' + event.getId() : '/events/add'}" th:method="POST">
                 <input id="id" type="hidden" name="id" th:value="${event != null ? event.getId() : ''}">
 
-                <!-- Event Name -->
                 <div class="form-group">
                     <label for="name">Event Name</label>
                     <input type="text" class="form-control" id="name" name="name"

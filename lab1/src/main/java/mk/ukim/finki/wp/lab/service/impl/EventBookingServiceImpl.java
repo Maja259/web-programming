@@ -1,6 +1,6 @@
 package mk.ukim.finki.wp.lab.service.impl;
 import mk.ukim.finki.wp.lab.model.EventBooking;
-import mk.ukim.finki.wp.lab.repository.impl.EventBookingRepository;
+import mk.ukim.finki.wp.lab.repository.impl.InMemoryEventBookingRepository;
 import mk.ukim.finki.wp.lab.service.EventBookingService;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import java.util.ArrayList;
 public class EventBookingServiceImpl implements EventBookingService {
     private final List<EventBooking> bookings = new ArrayList<>();
 
-    private final EventBookingRepository eventBookingRepository;
+    private final InMemoryEventBookingRepository inMemoryEventBookingRepository;
 
-    public EventBookingServiceImpl(EventBookingRepository eventBookingRepository) {
-        this.eventBookingRepository = eventBookingRepository;
+    public EventBookingServiceImpl(InMemoryEventBookingRepository inMemoryEventBookingRepository) {
+        this.inMemoryEventBookingRepository = inMemoryEventBookingRepository;
     }
 
     @Override
@@ -24,18 +24,18 @@ public class EventBookingServiceImpl implements EventBookingService {
 //        }
         EventBooking booking = new EventBooking(eventName,attendeeName,attendeeAddress, numberOfTickets);
 //        bookings.add(booking);
-        eventBookingRepository.addBooking(booking);
+        inMemoryEventBookingRepository.addBooking(booking);
         return booking;
     }
 
     @Override
     public List<EventBooking> listAll() {
-        return eventBookingRepository.findAllBookings();
+        return inMemoryEventBookingRepository.findAllBookings();
     }
 
     @Override
     public List<EventBooking> searchBookings(String searchText, Long numberOfTickets) {
-        return eventBookingRepository.searchBookings(searchText, numberOfTickets);
+        return inMemoryEventBookingRepository.searchBookings(searchText, numberOfTickets);
     }
 
 }

@@ -1,4 +1,5 @@
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8"/>
     <title>Events</title>
@@ -140,7 +141,7 @@
                     <th scope="col">Description</th>
                     <th scope="col">Popularity Score</th>
                     <th scope="col">Location</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col" sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
                 </tr>
                 </thead>
 
@@ -154,11 +155,10 @@
                     <td th:text="${event.getDescription()}"></td>
                     <td th:text="${event.getPopularityScore()}"></td>
                     <td th:text="${event.getLocation() != null ? event.getLocation().getName() : 'No Location'}"></td>
-                    <td>
-                        <div class="event-actions">
-                            <a th:href="@{/events/edit-form/{id}(id=${event.getId()})}" class="btn btn-info btn-sm">
-                                Edit
-                            </a>
+                    <td sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/events/edit-form/{id}(id=${event.getId()})}" class="btn btn-info btn-sm">
+                            Edit
+                        </a>
                             <form th:action="@{/events/delete/{id}(id=${event.getId()})}" method="POST"
                                   class="d-inline-block">
                                 <input type="hidden" name="_method" value="DELETE">
@@ -174,7 +174,7 @@
                                     <button type="submit" class="btn btn-danger btn-sm">Decrement</button>
                                 </form>
                             </div>
-                        </div>
+                        <div>th:if="${event.isDisabled} == true"</div>
                     </td>
                 </tr>
                 </tbody>
